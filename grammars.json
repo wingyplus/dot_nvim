@@ -8,5 +8,11 @@
     "name": "javascript",
     "filetypes": ["js", "jsx"],
     "files": ["src/parser.c", "src/scanner.c"]
+  },
+  {
+    "name": "typescript",
+    "filetypes": ["ts"],
+    "files": ["typescript/src/parser.c", "typescript/src/scanner.c"],
+    "include_paths": ["typescript/src"]
   }
 ]

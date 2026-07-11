@@ -17,6 +17,8 @@ const TreeSitter = struct {
     name: []const u8,
     /// Source files to compile. Default is only `src/parser.c`.
     files: []const []const u8 = &.{"src/parser.c"},
+    /// C source include paths. Default to `src`.
+    include_paths: []const []const u8 = &.{"src"},
 };
 
 fn tree_sitter_library(
@@ -43,6 +45,10 @@ fn tree_sitter_library(
         .files = ts.files,
         .flags = &.{"-std=c11"},
     });
+
+    for (ts.include_paths) |include_path| {
+        module.addIncludePath(dep.path(include_path));
+    }
 
     const lib = b.addLibrary(.{
         .name = ts.name,
