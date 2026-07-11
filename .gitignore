@@ -1,4 +1,10 @@
+# Zig related
 zig-pkg
 zig-out
-parser/*.so
 .zig-cache
+
+# TreeSitter related
+parser/*.so
+
+# Nvim related
+nvim.log
