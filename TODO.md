@@ -6,3 +6,4 @@
 - [ ] vue
 - [ ] bash
 - [ ] ruby
+- [ ] css
