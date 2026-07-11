@@ -1,0 +1,7 @@
+[
+  {
+    "name": "elixir",
+    "filetypes": ["ex", "exs"],
+    "files": ["src/parser.c", "src/scanner.c"]
+  }
+]

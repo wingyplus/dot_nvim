@@ -1,5 +1,17 @@
 const std = @import("std");
 
+const grammars_json = @embedFile("grammars.json");
+
+fn load_grammars_json(b: *std.Build) []TreeSitter {
+    const grammars = std.json.parseFromSlice(
+        []TreeSitter,
+        b.allocator,
+        grammars_json,
+        .{ .ignore_unknown_fields = true },
+    ) catch @panic("invalid grammars.json");
+    return grammars.value;
+}
+
 const TreeSitter = struct {
     /// Language name (elixir, python, etc.)
     name: []const u8,
@@ -11,10 +23,10 @@ fn tree_sitter_library(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    comptime ts: TreeSitter,
+    ts: TreeSitter,
 ) *std.Build.Step.InstallArtifact {
     const dep = b.dependency(
-        std.fmt.comptimePrint("tree-sitter-{s}", .{ts.name}),
+        b.fmt("tree-sitter-{s}", .{ts.name}),
         .{
             .target = target,
             .optmize = optimize,
@@ -39,7 +51,7 @@ fn tree_sitter_library(
     });
 
     return b.addInstallArtifact(lib, .{
-        .dest_sub_path = std.fmt.comptimePrint("{s}.so", .{ts.name}),
+        .dest_sub_path = b.fmt("{s}.so", .{ts.name}),
     });
 }
 
@@ -47,13 +59,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    b.getInstallStep().dependOn(
-        &tree_sitter_library(b, target, optimize, .{
-            .name = "elixir",
-            .files = &.{
-                "src/parser.c",
-                "src/scanner.c",
-            },
-        }).step,
-    );
+    for (load_grammars_json(b)) |ts| {
+        b.getInstallStep().dependOn(&tree_sitter_library(b, target, optimize, ts).step);
+    }
 }
