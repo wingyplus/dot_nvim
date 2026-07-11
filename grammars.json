@@ -3,5 +3,10 @@
     "name": "elixir",
     "filetypes": ["ex", "exs"],
     "files": ["src/parser.c", "src/scanner.c"]
+  },
+  {
+    "name": "javascript",
+    "filetypes": ["js", "jsx"],
+    "files": ["src/parser.c", "src/scanner.c"]
   }
 ]
