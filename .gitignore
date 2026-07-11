@@ -1,0 +1,4 @@
+zig-pkg
+zig-out
+parser/*.so
+.zig-cache
