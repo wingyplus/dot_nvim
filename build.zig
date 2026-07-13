@@ -1,71 +1,99 @@
 const std = @import("std");
 
-const grammars_json = @embedFile("grammars.json");
-
-fn load_grammars_json(b: *std.Build) ![]TreeSitter {
-    const grammars = try std.json.parseFromSlice(
-        []TreeSitter,
-        b.allocator,
-        grammars_json,
-        .{ .ignore_unknown_fields = true },
-    );
-    return grammars.value;
-}
-
-const TreeSitter = struct {
-    /// The language name (for example, `elixir` or `python`).
-    name: []const u8,
-    /// The grammar directory within the package (for example, `typescript` in the `tree-sitter-typescript` package).
-    sub_path: []const u8 = "",
+const TS_PKGS = .{
+    "elixir",
+    "iex",
+    "javascript",
+    "typescript",
 };
 
-// TODO: Read tree-sitter.json to compile grammars automatically.
-fn tree_sitter_library(
+const TreeSitter_Grammar = struct {
+    name: []const u8,
+    path: []const u8,
+};
+
+/// `tree-sitter.json` schema. Pick only interest in build.
+const TreeSitter = struct {
+    grammars: []const TreeSitter_Grammar,
+};
+
+fn parseTreeSitterJson(b: *std.Build, lazy_path: std.Build.LazyPath) !TreeSitter {
+    const path = try lazy_path.getPath4(b, null);
+    const tree_sitter_json = try path.root_dir.handle.readFileAlloc(
+        b.graph.io,
+        path.sub_path,
+        b.allocator,
+        .unlimited,
+    );
+    const ts = try std.json.parseFromSlice(
+        TreeSitter,
+        b.allocator,
+        tree_sitter_json,
+        .{ .ignore_unknown_fields = true },
+    );
+    return ts.value;
+}
+
+fn installTreeSitterParser(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    ts: TreeSitter,
-) *std.Build.Step.InstallArtifact {
+    name: []const u8,
+) !void {
     const dep = b.dependency(
-        b.fmt("tree-sitter-{s}", .{ts.name}),
+        b.fmt("tree-sitter-{s}", .{name}),
         .{
             .target = target,
             .optmize = optimize,
         },
     );
-    const root = dep.path(ts.sub_path);
 
-    const module = b.createModule(.{
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
-    });
-    module.addCSourceFile(.{
-        .file = root.path(b, "src/parser.c"),
-        .flags = &.{"-std=c11"},
-    });
-    if (hasScanner(b, root)) {
+    const tree_sitter_json = dep.path("tree-sitter.json");
+    // Default to current path of `dep` if the `tree-sitter.json` doesn't exists.
+    const ts_json = if (hasFile(b, tree_sitter_json)) try parseTreeSitterJson(b, tree_sitter_json) else TreeSitter{
+        .grammars = &[_]TreeSitter_Grammar{
+            .{ .name = name, .path = "." },
+        },
+    };
+
+    for (ts_json.grammars) |grammar| {
+        const root = dep.path(grammar.path);
+
+        const module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        });
         module.addCSourceFile(.{
-            .file = root.path(b, "src/scanner.c"),
+            .file = root.path(b, "src/parser.c"),
             .flags = &.{"-std=c11"},
         });
+        const scanner_c = root.path(b, "src/scanner.c");
+        if (hasFile(b, scanner_c)) {
+            module.addCSourceFile(.{
+                .file = scanner_c,
+                .flags = &.{"-std=c11"},
+            });
+        }
+        module.addIncludePath(root.path(b, "src"));
+
+        const lib = b.addLibrary(.{
+            .name = grammar.name,
+            .linkage = .dynamic,
+            .root_module = module,
+        });
+
+        b.getInstallStep().dependOn(
+            &b.addInstallArtifact(lib, .{
+                .dest_sub_path = b.fmt("{s}.so", .{grammar.name}),
+            }).step,
+        );
     }
-    module.addIncludePath(root.path(b, "src"));
-
-    const lib = b.addLibrary(.{
-        .name = ts.name,
-        .linkage = .dynamic,
-        .root_module = module,
-    });
-
-    return b.addInstallArtifact(lib, .{
-        .dest_sub_path = b.fmt("{s}.so", .{ts.name}),
-    });
 }
 
-fn hasScanner(b: *std.Build, root: std.Build.LazyPath) bool {
+fn hasFile(b: *std.Build, root: std.Build.LazyPath) bool {
     const path = root.getPath4(b, null) catch return false;
-    path.access(b.graph.io, "src/scanner.c", .{}) catch return false;
+    path.root_dir.handle.access(b.graph.io, path.sub_path, .{}) catch return false;
     return true;
 }
 
@@ -73,7 +101,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    for (try load_grammars_json(b)) |ts| {
-        b.getInstallStep().dependOn(&tree_sitter_library(b, target, optimize, ts).step);
+    inline for (TS_PKGS) |ts| {
+        try installTreeSitterParser(b, target, optimize, ts);
     }
 }
