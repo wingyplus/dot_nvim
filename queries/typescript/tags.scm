@@ -1,3 +1,5 @@
+;; inherits: javascript
+
 (function_signature
   name: (identifier) @name) @definition.function
 

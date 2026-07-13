@@ -58,13 +58,13 @@
  ] @constant
  (#match? @constant "^[A-Z_][A-Z\\d_]+$"))
 
+; #is-not? doesn't work on Neovim.
 ((identifier) @variable.builtin
- (#match? @variable.builtin "^(arguments|module|console|window|document)$")
- (#is-not? local))
+ (#match? @variable.builtin "^(arguments|module|console|window|document)$"))
 
+; #is-not? doesn't work on Neovim.
 ((identifier) @function.builtin
- (#eq? @function.builtin "require")
- (#is-not? local))
+ (#eq? @function.builtin "require"))
 
 ; Literals
 ;---------
