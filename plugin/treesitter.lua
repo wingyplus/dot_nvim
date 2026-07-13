@@ -4,11 +4,13 @@ local grammars = vim.json.decode(table.concat(vim.fn.readfile(path), "\n"))
 
 -- Register all grammars, defined in grammars.json
 for _, grammar in ipairs(grammars) do
-  vim.treesitter.language.register(grammar.name, grammar.filetypes)
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = grammar.name,
-    callback = function()
-      vim.treesitter.start()
-    end,
-  })
+  if #grammar.filetypes > 0 then
+    vim.treesitter.language.register(grammar.name, grammar.filetypes)
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = grammar.filetypes,
+      callback = function()
+        vim.treesitter.start()
+      end,
+    })
+  end
 end

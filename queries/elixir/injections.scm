@@ -61,3 +61,20 @@
  (#eq? @_sigil_name "VUE")
  (#set! injection.language "vue")
  (#set! injection.combined))
+
+; IEx
+(unary_operator
+  operator: "@"
+  operand: (call
+    target: ((identifier) @_attribute
+      (#any-of? @_attribute
+       "moduledoc"
+       "typedoc"
+       "shortdoc"
+       "doc"))
+    (arguments 
+      [
+       (string (quoted_content) @injection.content)
+       (sigil (quoted_content) @injection.content)
+       ]))
+    (#set! injection.language "iex"))

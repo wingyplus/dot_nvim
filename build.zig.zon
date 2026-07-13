@@ -44,6 +44,10 @@
             .url = "https://github.com/tree-sitter/tree-sitter-typescript/archive/75b3874edb2dc714fb1fd77a32013d0f8699989f.tar.gz",
             .hash = "N-V-__8AAJZtIQHTLStHg_0TegWiaX-N1przeeHzJp9x9b6z",
         },
+        .@"tree-sitter-iex" = .{
+            .url = "https://github.com/elixir-lang/tree-sitter-iex/archive/39f20bb51f502e32058684e893c0c0b00bb2332c.tar.gz",
+            .hash = "N-V-__8AAOq3AQBRnyxhl0qr1HgTIE2dJAkBSkaDj7JOxfHK",
+        },
     },
     .paths = .{
         "build.zig",

@@ -1,8 +1,13 @@
 [
   {
     "name": "elixir",
-    "filetypes": ["ex", "exs"],
+    "filetypes": ["elixir"],
     "files": ["src/parser.c", "src/scanner.c"]
+  },
+{
+    "name": "iex",
+    "filetypes": [],
+    "files": ["src/parser.c"]
   },
   {
     "name": "javascript",
