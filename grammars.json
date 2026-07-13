@@ -1,23 +1,19 @@
 [
   {
     "name": "elixir",
-    "filetypes": ["elixir"],
-    "files": ["src/parser.c", "src/scanner.c"]
+    "filetypes": ["elixir"]
   },
 {
     "name": "iex",
-    "filetypes": [],
-    "files": ["src/parser.c"]
+    "filetypes": []
   },
   {
     "name": "javascript",
-    "filetypes": ["js", "jsx"],
-    "files": ["src/parser.c", "src/scanner.c"]
+    "filetypes": ["javascript"]
   },
   {
     "name": "typescript",
-    "filetypes": ["ts"],
-    "files": ["typescript/src/parser.c", "typescript/src/scanner.c"],
-    "include_paths": ["typescript/src"]
+    "filetypes": ["typescript"],
+    "sub_path": "typescript"
   }
 ]
