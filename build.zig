@@ -6,6 +6,7 @@ const TS_PKGS = .{
     "javascript",
     "typescript",
     "heex",
+    "yaml",
 };
 
 const TreeSitter_Grammar = struct {

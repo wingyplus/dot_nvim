@@ -52,6 +52,10 @@
             .url = "https://github.com/phoenixframework/tree-sitter-heex/archive/5842537f734d7c12685bf27d6005313e3e5a47a0.tar.gz",
             .hash = "N-V-__8AANdtBABaAu_BwYn2F8-37doAO6jX0_KXTF25Z_vo",
         },
+        .@"tree-sitter-yaml" = .{
+            .url = "https://github.com/zed-industries/tree-sitter-yaml/archive/baff0b51c64ef6a1fb1f8390f3ad6015b83ec13a.tar.gz",
+            .hash = "N-V-__8AAFGWGgDp1zgP0yy1vH_fGhhM4zpdXA7ZHePES3k_",
+        },
     },
     .paths = .{
         "build.zig",
