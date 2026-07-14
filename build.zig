@@ -5,6 +5,7 @@ const TS_PKGS = .{
     "iex",
     "javascript",
     "typescript",
+    "heex",
 };
 
 const TreeSitter_Grammar = struct {

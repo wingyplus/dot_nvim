@@ -2,6 +2,7 @@ local filetypes = {
   elixir = { "elixir" },
   tsx = { "tsx" },
   typescript = { "typescript" },
+  heex = { "heex" },
 }
 
 -- Register all grammars, defined in grammars.json

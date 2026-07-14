@@ -48,6 +48,10 @@
             .url = "https://github.com/elixir-lang/tree-sitter-iex/archive/39f20bb51f502e32058684e893c0c0b00bb2332c.tar.gz",
             .hash = "N-V-__8AAOq3AQBRnyxhl0qr1HgTIE2dJAkBSkaDj7JOxfHK",
         },
+        .@"tree-sitter-heex" = .{
+            .url = "https://github.com/phoenixframework/tree-sitter-heex/archive/5842537f734d7c12685bf27d6005313e3e5a47a0.tar.gz",
+            .hash = "N-V-__8AANdtBABaAu_BwYn2F8-37doAO6jX0_KXTF25Z_vo",
+        },
     },
     .paths = .{
         "build.zig",
