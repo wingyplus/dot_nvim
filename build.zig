@@ -1,22 +1,28 @@
 const std = @import("std");
 
-const TS_PKGS = .{
-    "elixir",
-    "iex",
-    "javascript",
-    "typescript",
-    "heex",
-    "yaml",
+const TreeSitterPackage = struct {
+    name: []const u8,
+    location: []const u8 = ".",
 };
 
-const TreeSitter_Grammar = struct {
+const TS_PKGS = [_]TreeSitterPackage{
+    .{ .name = "elixir" },
+    .{ .name = "iex" },
+    .{ .name = "javascript" },
+    .{ .name = "typescript" },
+    .{ .name = "heex" },
+    .{ .name = "yaml" },
+    .{ .name = "dang", .location = "treesitter" },
+};
+
+const TreeSitterGrammar = struct {
     name: []const u8,
-    path: []const u8,
+    path: []const u8 = ".",
 };
 
 /// `tree-sitter.json` schema. Pick only interest in build.
 const TreeSitter = struct {
-    grammars: []const TreeSitter_Grammar,
+    grammars: []const TreeSitterGrammar,
 };
 
 fn parseTreeSitterJson(b: *std.Build, lazy_path: std.Build.LazyPath) !TreeSitter {
@@ -40,26 +46,27 @@ fn installTreeSitterParser(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    name: []const u8,
+    ts_pkg: TreeSitterPackage,
 ) !void {
     const dep = b.dependency(
-        b.fmt("tree-sitter-{s}", .{name}),
+        b.fmt("tree-sitter-{s}", .{ts_pkg.name}),
         .{
             .target = target,
             .optmize = optimize,
         },
     );
 
-    const tree_sitter_json = dep.path("tree-sitter.json");
+    const root_pkg = dep.path(ts_pkg.location);
+    const tree_sitter_json = root_pkg.path(b, "tree-sitter.json");
     // Default to current path of `dep` if the `tree-sitter.json` doesn't exists.
     const ts_json = if (hasFile(b, tree_sitter_json)) try parseTreeSitterJson(b, tree_sitter_json) else TreeSitter{
-        .grammars = &[_]TreeSitter_Grammar{
-            .{ .name = name, .path = "." },
+        .grammars = &[_]TreeSitterGrammar{
+            .{ .name = ts_pkg.name, .path = "." },
         },
     };
 
     for (ts_json.grammars) |grammar| {
-        const root = dep.path(grammar.path);
+        const root = root_pkg.path(b, grammar.path);
 
         const module = b.createModule(.{
             .target = target,
@@ -103,7 +110,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    inline for (TS_PKGS) |ts| {
-        try installTreeSitterParser(b, target, optimize, ts);
+    inline for (TS_PKGS) |ts_pkg| {
+        try installTreeSitterParser(b, target, optimize, ts_pkg);
     }
 }

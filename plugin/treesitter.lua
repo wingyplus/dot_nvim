@@ -4,6 +4,7 @@ local filetypes = {
   typescript = { "typescript" },
   heex = { "heex" },
   yaml = { "yaml" },
+  dang = { "dang" },
 }
 
 -- Register all grammars, defined in grammars.json

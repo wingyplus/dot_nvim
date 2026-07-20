@@ -56,6 +56,10 @@
             .url = "https://github.com/zed-industries/tree-sitter-yaml/archive/baff0b51c64ef6a1fb1f8390f3ad6015b83ec13a.tar.gz",
             .hash = "N-V-__8AAFGWGgDp1zgP0yy1vH_fGhhM4zpdXA7ZHePES3k_",
         },
+        .@"tree-sitter-dang" = .{
+            .url = "https://github.com/vito/dang/archive/9689d13e8a993b4a35fce865cdeda283dfe17565.tar.gz",
+            .hash = "N-V-__8AAJdbTAAKon0RNAsKqnIKis_MDeA9X-ggm4TxzXvv",
+        },
     },
     .paths = .{
         "build.zig",
